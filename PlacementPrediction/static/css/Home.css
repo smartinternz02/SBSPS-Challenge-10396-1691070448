@@ -3,8 +3,8 @@
 }
 
 .u-section-1 .u-text-1 {
-  font-size: 12.5rem;
-  margin: 0 1116px 0 -24px;
+  font-size: 1.5rem;
+  margin: 0 916px 0 -24px;
 }
 
 .u-section-1 .u-rotation-parent-1 {
@@ -37,8 +37,9 @@
 .u-section-1 .u-form-1 {
   height: 1162px;
   background-image: none;
-  --checkbox-checked-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
-  margin: -1061px 570px 0 -22px;
+  --checkbox-checked-icon: url(
+  "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+  margin: -1030px 700px 0 -22px;
 }
 
 .u-section-1 .u-form-group-2 {
