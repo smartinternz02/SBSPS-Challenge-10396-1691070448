@@ -1,5 +1,5 @@
 #Step1 - Importing Required Libraries 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, url_for
 import pickle
 
 #Step2 - Initializing the Flask
@@ -11,36 +11,54 @@ model = pickle.load(open(r'PlacementPrediction_rf.pk1','rb'))
 def home():
     return render_template('Home.html')
 
-@app.route('/Home', methods = ['POST'])
+@app.route('/submit', methods = ['POST'])
 
-def prod():
-    name = request.form.get('name')
-    gender = request.form.get('gender')
-    ssc_p = request.form.get('ssc_p')
-    hsc_p = request.form.get('hsc_p')
-    hsc_s = request.form.get('hsc_s')
-    degree_p = request.form.get('degree_p')
-    degree_t = request.form.get('degree_t')
-    workex = request.form.get('workex')
-    etest_p = request.form.get('etest_p')
-    specialisation = request.form.get('specialisation')
-    mba_p = request.form.get('mba_p')
-    input = [[int(gender), float(ssc_p), float(hsc_p), int(hsc_s), float(degree_p), int(degree_t), int(workex), float(etest_p), int(specialisation), float(mba_p)]]
-    #print(input)
-    op = model.predict(input)
+def submit():
+    if request.method == 'POST':
+        # Retrieve form data
+        gender = request.form.get('gender')
+        secondary_school_percentage = request.form.get('ssc_p')
+        high_school_percentage = request.form.get('hsc_p')
+        high_school_stream = request.form.get('hsc_s')
+        degree_percentage = request.form.get('degree_p')
+        degree_type = request.form.get('degree_t')
+        work_experience = request.form.get('workex')
+        employability_test_percentage = request.form.get('etest_p')
+        specialisation = request.form.get('specialisation')
+        mba_percentage = request.form.get('mba_p')
+
+    try:
+        secondary_school_percentage = float(secondary_school_percentage)
+        high_school_percentage = float(high_school_percentage)
+        degree_percentage = float(degree_percentage)
+        employability_test_percentage = float(employability_test_percentage)
+        mba_percentage = float(mba_percentage)
     
-    if op == 1:
-        text = "You are placed!"
-        print(text)
+    except ValueError:
+        # Handle invalid input (e.g., non-numeric values)
+        return "Invalid input. Please enter numeric values for percentage fields."
+
+    # Create a feature vector with the form inputs
+    feature_vector = [int(gender), secondary_school_percentage, high_school_percentage, int(high_school_stream), degree_percentage, int(degree_type), int(work_experience), employability_test_percentage, specialisation, mba_percentage]
+
+    # Make predictions using the loaded model
+    prediction = model.predict([feature_vector])[0]
+
+    # Define a result message and URL for redirection based on the prediction
+    if prediction == 1:
+        result_message = "Congratulations! You have high chances of getting placed."
     else:
-        text = "You are not placed!"
-        print(text)
-    
-    return render_template('Home.html', Output = str(text))
+        result_message = "Sorry, your chances of getting placed are low."
 
-#step4- run the application
+    # Redirect to the results page with the result message
+    return redirect(url_for('results', message=result_message))
+
+@app.route('/results/<message>')
+def results(message):
+    return render_template('results.html', message=message)
 
 if __name__ == '__main__':
     app.run()
+
 
   
