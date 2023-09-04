@@ -1,10 +1,15 @@
 #Step1 - Importing Required Libraries 
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 from flask import Flask, request, render_template, redirect, url_for
 import pickle
 
 #Step2 - Initializing the Flask
 app = Flask(__name__)
 model = pickle.load(open(r'PlacementPrediction_rf.pk1','rb'))
+
 
 #step3 - Routing to the templates with functionalities
 @app.route('/')
@@ -16,6 +21,7 @@ def home():
 def submit():
     if request.method == 'POST':
         # Retrieve form data
+        name = request.form.get('name')
         gender = request.form.get('gender')
         secondary_school_percentage = request.form.get('ssc_p')
         high_school_percentage = request.form.get('hsc_p')
@@ -46,9 +52,9 @@ def submit():
 
     # Define a result message and URL for redirection based on the prediction
     if prediction == 1:
-        result_message = "Congratulations! You have high chances of getting placed."
+        result_message = "Congratulations " + name + "! You have high chances of getting placed."
     else:
-        result_message = "Sorry, your chances of getting placed are low."
+        result_message = "Sorry " + name + ", your chances of getting placed are low."
 
     # Redirect to the results page with the result message
     return redirect(url_for('results', message=result_message))
@@ -56,6 +62,7 @@ def submit():
 @app.route('/results/<message>')
 def results(message):
     return render_template('results.html', message=message)
+
 
 if __name__ == '__main__':
     app.run()
