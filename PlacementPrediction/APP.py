@@ -8,7 +8,7 @@ import pickle
 
 #Step2 - Initializing the Flask
 app = Flask(__name__)
-model = pickle.load(open(r'PlacementPrediction_rf.pk1','rb'))
+model = pickle.load(open(r'SBSPS-Challenge-10396-1691070448\PlacementPrediction\PlacementPrediction_rf.pk1','rb'))
 
 
 #step3 - Routing to the templates with functionalities
@@ -48,7 +48,24 @@ def submit():
     feature_vector = [int(gender), secondary_school_percentage, high_school_percentage, int(high_school_stream), degree_percentage, int(degree_type), int(work_experience), employability_test_percentage, specialisation, mba_percentage]
 
     # Make predictions using the loaded model
-    prediction = model.predict([feature_vector])[0]
+    import requests
+
+    # NOTE: you must manually set API_KEY below using information retrieved from your IBM Cloud account.
+    API_KEY = "yjE1EqzMhv1bFKv4PlKZdClTCnLaFgx8e-Vu2mYUyzri"
+    token_response = requests.post('https://iam.cloud.ibm.com/identity/token', data={"apikey":
+    API_KEY, "grant_type": 'urn:ibm:params:oauth:grant-type:apikey'})
+    mltoken = token_response.json()["access_token"]
+
+    header = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + mltoken}
+
+    # NOTE: manually define and pass the array(s) of values to be scored in the next line
+    payload_scoring = {"input_data": [{"fields": ["gender", "ssc_p", "hsc_p","hsc_s", "dgree_p", "degree_t", "workex", "etest_p","specialisation", "mba_p"], "values": feature_vector}]}
+
+    response_scoring = requests.post('https://eu-gb.ml.cloud.ibm.com/ml/v4/deployments/84db3997-9455-4e0c-90ab-6d2158394b12/predictions?version=2021-05-01', json=payload_scoring,
+    headers={'Authorization': 'Bearer ' + mltoken})
+    print("Scoring response")
+    print(response_scoring.json())
+    prediction = response_scoring
 
     # Define a result message and URL for redirection based on the prediction
     if prediction == 1:
